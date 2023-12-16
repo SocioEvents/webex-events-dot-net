@@ -18,14 +18,14 @@ public class Extensions
         set;
     }
 
-    [JsonPropertyName("availableThreshold")]
+    [JsonPropertyName("availableCost")]
     public int? AvailableCost
     {
         get;
         set;
     }
 
-    [JsonPropertyName("Threshold")]
+    [JsonPropertyName("threshold")]
     public int? Threshold
     {
         set;

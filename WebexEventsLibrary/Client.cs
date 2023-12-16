@@ -1,19 +1,23 @@
-﻿using WebexEvents.Error;
-
-namespace WebexEvents;
+﻿namespace WebexEvents;
 
 using System.Text.Json;
 using System.Text;
 using System.Diagnostics;
 using System.Net;
 using Exceptions;
+using Error;
+using Http;
 
 public class Client
 {
     public static readonly int[] RetriableHttpStatuses = { 408, 409, 429, 502, 503, 504 };
-
-    public static Response Query(string query, string operationName, Dictionary<string, Object> variables,
-        Dictionary<string, string> headers)
+    
+    public static Response Query(
+        string query,
+        string operationName,
+        Dictionary<string, Object> variables,
+        Dictionary<string, string> headers
+        )
     {
         Helpers.ValidateAccessTokenExistence();
         var data = new Dictionary<string, Object>()
@@ -23,7 +27,7 @@ public class Client
             ["variables"] = variables
         };
         
-        var client = new HttpClient();
+        var client =  HttpClientFactory.Client;
         client.Timeout = Configuration.Timeout;
 
         // Add headers
@@ -45,18 +49,19 @@ public class Client
         var response = client.PostAsync(Helpers.Url(), content).Result;
         var responseObject = new Response(response);
         responseObject.ErrorResponse =  JsonSerializer.Deserialize<ErrorResponse>(responseObject.Body());
-        var retryCount = 0;
-
-        if (!response.IsSuccessStatusCode)
+        var httpRetryCount = 0;
+        if (!response.IsSuccessStatusCode && !responseObject.ErrorResponse.DailyAvailableCostIsReached())
         {
             var wait = 250.0;
             var waitRate = 1.4;
-            while (retryCount < Configuration.MaxRetries)
+            var i = 0;
+            while (i < Configuration.MaxRetries)
             {
-                retryCount++;
+                i++;
                 var statusCode = (int)response.StatusCode;
                 if (RetriableHttpStatuses.Contains(statusCode))
                 {
+                    httpRetryCount++;
                     wait *= waitRate;
                     Thread.Sleep(TimeSpan.FromMilliseconds((int)wait));
                     response = client.PostAsync(Helpers.Url(), content).Result;
@@ -66,22 +71,21 @@ public class Client
                 {
                     break;
                 }
+                
             }
         }
 
         stopwatch.Stop();
 
         responseObject.ResponseObject = response;
-        responseObject.RetryCount = retryCount;
+        responseObject.RetryCount = httpRetryCount;
         responseObject.TimeSpentInMs = stopwatch.ElapsedMilliseconds;
 
-        if (response.IsSuccessStatusCode)
+        if (!response.IsSuccessStatusCode)
         {
-            return responseObject;
+            ManageErrorState(responseObject);
         }
-
-        ManageErrorState(responseObject);
-
+        
         return responseObject;
     }
 
