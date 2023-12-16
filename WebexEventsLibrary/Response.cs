@@ -35,6 +35,13 @@ public class Response
         get;
         set;
     }
+
+    public RateLimiter RateLimiter
+    {
+        get;
+        set;
+    }
+    
     
     public Response(HttpResponseMessage response)
     {

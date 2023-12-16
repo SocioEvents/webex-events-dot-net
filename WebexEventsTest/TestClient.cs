@@ -1,13 +1,13 @@
 using WebexEvents.Exceptions;
-
-namespace WebexEventsTest;
 using System.Text.Json;
 using System.Net;
 using WebexEvents;
 using WebexEvents.Http;
 using RichardSzalay.MockHttp;
 
-public class Tests
+namespace WebexEventsTest;
+
+public class TestClient
 {
     private MockHttpMessageHandler mockHttp;
     [SetUp]

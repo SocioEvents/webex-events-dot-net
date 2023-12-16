@@ -80,7 +80,8 @@ public class Client
         responseObject.ResponseObject = response;
         responseObject.RetryCount = httpRetryCount;
         responseObject.TimeSpentInMs = stopwatch.ElapsedMilliseconds;
-
+        responseObject.RateLimiter = new RateLimiter(responseObject);
+        
         if (!response.IsSuccessStatusCode)
         {
             ManageErrorState(responseObject);
