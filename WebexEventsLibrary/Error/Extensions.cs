@@ -47,14 +47,14 @@ public class Extensions
     }
 
     [JsonPropertyName("referenceId")]
-    public int? ReferenceId
+    public string? ReferenceId
     {
         get;
         set;
     }
 
     [JsonPropertyName("errors")]
-    public dynamic? Errors
+    public Dictionary<string, List<string>> Errors
     {
         get;
         set;
