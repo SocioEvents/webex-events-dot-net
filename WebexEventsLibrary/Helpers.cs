@@ -50,7 +50,7 @@ public class Helpers
         var url = "";
         if (Configuration.AccessToken.StartsWith("sk_live"))
         {
-            url = "http://localhost:3000";
+            url = "https://public.api.socio.events";
         }
         else
         {

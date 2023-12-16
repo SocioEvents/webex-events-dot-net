@@ -7,10 +7,31 @@ using System.Net;
 using Exceptions;
 using Error;
 using Http;
+using System.IO;
+using System.Reflection;
 
 public class Client
 {
     public static readonly int[] RetriableHttpStatuses = { 408, 409, 429, 502, 503, 504 };
+
+    public static string DoIntrospectionQuery()
+    {
+        Assembly assembly = Assembly.GetExecutingAssembly();
+        Stream resourceStream = assembly.GetManifestResourceStream("WebexEvents.Resources.introspection.query");
+
+        if (resourceStream != null)
+        {
+            using (StreamReader reader = new StreamReader(resourceStream))
+            {
+                string contents = reader.ReadToEnd();
+                var response = Query(contents, "IntrospectionQuery", new Dictionary<string, object>(),
+                    new Dictionary<string, string>());
+                return response.Body();
+            }
+        }
+
+        throw new IOException();
+    }
     
     public static Response Query(
         string query,
