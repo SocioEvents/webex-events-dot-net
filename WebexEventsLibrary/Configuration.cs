@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Logging;
+
 namespace WebexEvents;
 
 public class Configuration
@@ -20,10 +22,17 @@ public class Configuration
         set;
     }
 
-    public static void Configure(string accessToken, int maxRetries, TimeSpan timeout)
+    public static ILogger? Logger
+    {
+        get;
+        set;
+    }
+
+    public static void Configure(string accessToken, int maxRetries, TimeSpan timeout, ILogger logger = null)
     {
         AccessToken = accessToken;
         MaxRetries = maxRetries;
         Timeout = timeout;
+        Logger = logger;
     }
 }

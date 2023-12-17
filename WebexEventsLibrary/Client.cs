@@ -9,14 +9,19 @@ using Error;
 using Http;
 using System.IO;
 using System.Reflection;
+using Microsoft.Extensions.Logging;
 
 public class Client
 {
+    private static readonly ILogger? _logger = Configuration.Logger;
+    
     public static readonly int[] RetriableHttpStatuses = { 408, 409, 429, 502, 503, 504 };
 
     public static string DoIntrospectionQuery()
     {
+        _logger?.LogInformation("Doing Introspection query...");
         Assembly assembly = Assembly.GetExecutingAssembly();
+        
         Stream resourceStream = assembly.GetManifestResourceStream("WebexEvents.Resources.introspection.query");
 
         if (resourceStream != null)
@@ -67,6 +72,7 @@ public class Client
         stopwatch.Start();
         var json = JsonSerializer.Serialize(data);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
+        _logger?.LogInformation($"Executing {operationName} query for the first time to {Helpers.Url()}");
         var response = client.PostAsync(Helpers.Url(), content).Result;
         var responseObject = new Response(response);
         responseObject.ErrorResponse =  JsonSerializer.Deserialize<ErrorResponse>(responseObject.Body());
@@ -84,6 +90,7 @@ public class Client
                 {
                     httpRetryCount++;
                     wait *= waitRate;
+                    _logger?.LogError($"{(int)response.StatusCode} HTTP status code is received. Retrying the {operationName} request. Retry count: {i}. Waiting for {wait} ms...");
                     Thread.Sleep(TimeSpan.FromMilliseconds((int)wait));
                     response = client.PostAsync(Helpers.Url(), content).Result;
                     responseObject.ErrorResponse =  JsonSerializer.Deserialize<ErrorResponse>(responseObject.Body());
@@ -103,8 +110,10 @@ public class Client
         responseObject.TimeSpentInMs = stopwatch.ElapsedMilliseconds;
         responseObject.RateLimiter = new RateLimiter(responseObject);
         
+        _logger?.LogInformation($"Executing {operationName} query is finished with {responseObject.Status()} status code. It took {stopwatch.ElapsedMilliseconds} ms and retried {httpRetryCount} times.");
         if (!response.IsSuccessStatusCode)
         {
+            _logger?.LogError($"Executing {operationName} query is failed. Received status code is {responseObject.Status()}");
             ManageErrorState(responseObject);
         }
         
