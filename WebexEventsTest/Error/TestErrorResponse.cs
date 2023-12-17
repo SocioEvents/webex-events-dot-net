@@ -50,7 +50,7 @@ public class TestErrorResponse
     
     
     [Test]
-    public void Test()
+    public void TestRateLimitingDetails()
     {
         var data = new Dictionary<string, Object>()
         {
