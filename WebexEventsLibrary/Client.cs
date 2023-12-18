@@ -29,8 +29,12 @@ public class Client
             using (StreamReader reader = new StreamReader(resourceStream))
             {
                 string contents = reader.ReadToEnd();
-                var response = Query(contents, "IntrospectionQuery", new Dictionary<string, object>(),
-                    new Dictionary<string, string>());
+                var response = Query(
+                    contents,
+                    "IntrospectionQuery",
+                    new Dictionary<string, object>(),
+                    new Dictionary<string, string>()
+                    );
                 return response.Body();
             }
         }

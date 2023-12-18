@@ -28,6 +28,20 @@ public class TestClient
     {
         return Client.Query("", "", new Dictionary<string, object>(), new Dictionary<string, string>());
     }
+    
+    private string IntrospectionQuery()
+    {
+        return Client.DoIntrospectionQuery();
+    }
+
+    [Test]
+    public void TestIntrospectionQuery()
+    {
+        Mock(HttpStatusCode.OK, "{}");
+        var response = IntrospectionQuery();
+        Assert.That("{}", Is.EqualTo(response));
+    }
+    
     [Test]
     public void With200StatusCode()
     {
@@ -38,6 +52,24 @@ public class TestClient
         Assert.That(0, Is.EqualTo(response.RetryCount));
     }
 
+    [Test]
+    public void With200StatusCodeAndCustomHeaders()
+    {
+        Mock(HttpStatusCode.OK, "{}");
+        var headers = new Dictionary<string, string>()
+        {
+            ["Idempotency-Key"] = "idempontency key"
+        };
+        var response = Client.Query("", "", new Dictionary<string, object>(), headers);
+        Assert.That(200, Is.EqualTo(response.Status()));
+        Assert.That("{}", Is.EqualTo(response.Body()));
+        
+        var responseHeaders = response.RequestHeaders();
+        responseHeaders.TryGetValues("Idempotency-Key", out var values);
+        var header = values?.FirstOrDefault() ?? "";
+        Assert.That("idempontency key", Is.EqualTo(header));
+    }
+    
     [Test]
     public void With400StatusCodeAndInvalidToken()
     {

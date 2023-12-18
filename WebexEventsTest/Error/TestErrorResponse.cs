@@ -54,10 +54,10 @@ public class TestErrorResponse
     {
         var data = new Dictionary<string, Object>()
         {
-            ["message"] = "Server Error",
+            ["message"] = "Max exceed",
             ["extensions"] = new Dictionary<string, Object>()
             {
-                ["code"] = "QUERY_TOO_COMPLEX",
+                ["code"] = "MAX_COST_EXCEEDED",
                 ["cost"] = 45,
                 ["availableCost"] = 5,
                 ["threshold"] = 50,
@@ -68,7 +68,7 @@ public class TestErrorResponse
 
         var json = JsonSerializer.Serialize(data);
         var errorResponse = JsonSerializer.Deserialize<ErrorResponse>(json);
-        Assert.That("QUERY_TOO_COMPLEX", Is.EqualTo(errorResponse.Extensions.Code));
+        Assert.That("MAX_COST_EXCEEDED", Is.EqualTo(errorResponse.Extensions.Code));
         Assert.That(45, Is.EqualTo(errorResponse.Extensions.Cost));
         Assert.That(5, Is.EqualTo(errorResponse.Extensions.AvailableCost));
         Assert.That(50, Is.EqualTo(errorResponse.Extensions.Threshold));

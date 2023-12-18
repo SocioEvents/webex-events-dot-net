@@ -22,7 +22,7 @@ public class RateLimiter
     {
         _headers = response.Headers();
 
-        var dailyCallLimit = getHeaderValue(DailyCallLimit);
+        var dailyCallLimit = GetHeaderValue(DailyCallLimit);
         if (dailyCallLimit.Length > 0)
         {
             string[] parts = dailyCallLimit.Split("/");
@@ -30,7 +30,7 @@ public class RateLimiter
             _dailyBasedCostThreshold = Int32.Parse(parts[1]);
         }
         
-        var secondlyCallLimit = getHeaderValue(SecondlyCallLimit);
+        var secondlyCallLimit = GetHeaderValue(SecondlyCallLimit);
         if (secondlyCallLimit.Length > 0)
         {
             string[] parts = secondlyCallLimit.Split("/");
@@ -38,20 +38,20 @@ public class RateLimiter
             _secondBasedCostThreshold = Int32.Parse(parts[1]);
         }
 
-        var dailyRetryAfter = getHeaderValue(DailyRetryAfter);
+        var dailyRetryAfter = GetHeaderValue(DailyRetryAfter);
         if (dailyRetryAfter.Length > 0)
         {
             _dailyRetryAfterInSecond = int.Parse(dailyRetryAfter);
         }
         
-        var secondlyRetryAfter = getHeaderValue(SecondlyRetryAfter);
+        var secondlyRetryAfter = GetHeaderValue(SecondlyRetryAfter);
         if (secondlyRetryAfter.Length > 0)
         {
             _secondlyRetryAfterInMs = int.Parse(secondlyRetryAfter);
         }
     }
 
-    private string getHeaderValue(string header)
+    private string GetHeaderValue(string header)
     {
         _headers.TryGetValues(header, out var values);
         return values?.FirstOrDefault() ?? "";
