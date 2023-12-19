@@ -13,7 +13,8 @@ public class TestRateLimiter
     [SetUp]
     public void Setup()
     {
-        Configuration.Configure("sk_live_accessToken", 1, TimeSpan.FromSeconds(30));
+        Configuration.AccessToken = "sk_live_accessToken";
+        Configuration.MaxRetries = 1;
     }
 
     private void Mock(string key, string value)
