@@ -31,6 +31,6 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build WebexEventsLibrary --no-restore
+      run: dotnet build Src --no-restore
     - name: Test
       run: dotnet test --verbosity normal
