@@ -9,7 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\WebexEventsLibrary\WebexEventsLibrary.csproj" />
+      <ProjectReference Include="..\Src\Src.csproj" />
     </ItemGroup>
 
     <ItemGroup>

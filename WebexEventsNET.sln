@@ -1,10 +1,10 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebexEventsLibrary", "WebexEventsLibrary\WebexEventsLibrary.csproj", "{CEBA87DD-0836-42A2-936D-6A8C8FFA1F1A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Src", "Src\Src.csproj", "{CEBA87DD-0836-42A2-936D-6A8C8FFA1F1A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebexEventsTest", "WebexEventsTest\WebexEventsTest.csproj", "{C4ECE1AC-787F-4EED-8163-BD46EA8A1851}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{C4ECE1AC-787F-4EED-8163-BD46EA8A1851}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebexEventsConsole", "WebexEventsConsole\WebexEventsConsole.csproj", "{DB3CFA6B-FFC6-4D1E-9A8D-1DFE4F085339}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Console", "Console\Console.csproj", "{DB3CFA6B-FFC6-4D1E-9A8D-1DFE4F085339}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{EEB5CD92-776E-4024-8432-F29F85AC3A46}"
 EndProject
