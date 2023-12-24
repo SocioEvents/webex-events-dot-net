@@ -33,7 +33,7 @@ public class TestRateLimiter
 
     private Response Query()
     {
-        return Client.Query("", "", new Dictionary<string, object>(), new Dictionary<string, string>());
+        return Client.Query("", "", new Dictionary<string, object>());
     }
     
     [Test]

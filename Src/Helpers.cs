@@ -10,9 +10,9 @@ public class Helpers
     private static string _userAgent = "";
 
 
-    public static void ValidateAccessTokenExistence()
+    public static void ValidateAccessTokenExistence(string accessToken)
     {
-        if (Configuration.AccessToken.Length < 1)
+        if (accessToken.Length < 1)
         {
             throw new AccessTokenIsRequiredException("Access Token is required.");
         }

@@ -27,7 +27,7 @@ public class TestClient
 
     private Response Query()
     {
-        return Client.Query("", "", new Dictionary<string, object>(), new Dictionary<string, string>());
+        return Client.Query("", "", new Dictionary<string, object>());
     }
     
     private string IntrospectionQuery()
@@ -57,18 +57,18 @@ public class TestClient
     public void With200StatusCodeAndCustomHeaders()
     {
         Mock(HttpStatusCode.OK, "{}");
-        var headers = new Dictionary<string, string>()
+        var options = new RequestOptions()
         {
-            ["Idempotency-Key"] = "idempontency key"
+            IdempotencyKey = "idempotency key"
         };
-        var response = Client.Query("", "", new Dictionary<string, object>(), headers);
+        var response = Client.Query("", "", new Dictionary<string, object>(), options);
         Assert.That(200, Is.EqualTo(response.Status()));
         Assert.That("{}", Is.EqualTo(response.Body()));
         
         var responseHeaders = response.RequestHeaders();
         responseHeaders.TryGetValues("Idempotency-Key", out var values);
         var header = values?.FirstOrDefault() ?? "";
-        Assert.That("idempontency key", Is.EqualTo(header));
+        Assert.That("idempotency key", Is.EqualTo(header));
     }
     
     [Test]

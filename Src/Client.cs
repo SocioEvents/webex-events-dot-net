@@ -31,9 +31,7 @@ public class Client
                 string contents = reader.ReadToEnd();
                 var response = Query(
                     contents,
-                    "IntrospectionQuery",
-                    new Dictionary<string, object>(),
-                    new Dictionary<string, string>()
+                    "IntrospectionQuery"
                     );
                 return response.Body();
             }
@@ -41,15 +39,29 @@ public class Client
 
         throw new IOException();
     }
+
+    public static Response Query(string query, string operationName, RequestOptions options)
+    {
+        return Query(query, operationName, new Dictionary<string, Object>(), options);
+    }
+    
+    public static Response Query(string query, string operationName)
+    {
+        return Query(query, operationName, new Dictionary<string, Object>(), new RequestOptions());
+    }
+    public static Response Query(string query, string operationName, Dictionary<string, Object> variables)
+    {
+        return Query(query, operationName, variables, new RequestOptions());
+    }
     
     public static Response Query(
         string query,
         string operationName,
         Dictionary<string, Object> variables,
-        Dictionary<string, string> headers
+        RequestOptions options
         )
     {
-        Helpers.ValidateAccessTokenExistence();
+        Helpers.ValidateAccessTokenExistence(options.AccessToken);
         var data = new Dictionary<string, Object>()
         {
             ["query"] = query,
@@ -58,15 +70,15 @@ public class Client
         };
         
         var client =  HttpClientFactory.Client;
-        client.Timeout = Configuration.Timeout;
+        client.Timeout = options.Timeout;
 
         // Add headers
-        foreach (KeyValuePair<string, string> item in headers)
+        if (options.IdempotencyKey != null)
         {
-            client.DefaultRequestHeaders.TryAddWithoutValidation(item.Key, item.Value);
+            client.DefaultRequestHeaders.TryAddWithoutValidation("Idempotency-Key", options.IdempotencyKey);
         }
 
-        client.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", "Bearer " + Configuration.AccessToken);
+        client.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", "Bearer " + options.AccessToken);
         client.DefaultRequestHeaders.TryAddWithoutValidation("X-Sdk-Name", ".NET SDK");
         client.DefaultRequestHeaders.TryAddWithoutValidation("X-Sdk-Version", Helpers.AssemblyVersion());
         client.DefaultRequestHeaders.TryAddWithoutValidation("X-Sdk-Lang-Version", Helpers.EnvironmentVersion());
@@ -86,7 +98,7 @@ public class Client
             var wait = 250.0;
             var waitRate = 1.4;
             var i = 0;
-            while (i < Configuration.MaxRetries)
+            while (i < options.MaxRetries)
             {
                 i++;
                 var statusCode = (int)response.StatusCode;
