@@ -33,7 +33,7 @@ public class Client
                     contents,
                     "IntrospectionQuery"
                     );
-                return response.Body();
+                return response.Body;
             }
         }
 
@@ -90,8 +90,8 @@ public class Client
         var content = new StringContent(json, Encoding.UTF8, "application/json");
         _logger?.LogInformation($"Executing {operationName} query for the first time to {Helpers.Url()}");
         var response = client.PostAsync(Helpers.Url(), content).Result;
-        var responseObject = new Response(response);
-        responseObject.ErrorResponse =  JsonSerializer.Deserialize<ErrorResponse>(responseObject.Body());
+        var responseObject = ResponseFactory.create(response);
+        responseObject.ErrorResponse =  JsonSerializer.Deserialize<ErrorResponse>(responseObject.Body);
         var httpRetryCount = 0;
         if (!response.IsSuccessStatusCode && !responseObject.ErrorResponse.DailyAvailableCostIsReached())
         {
@@ -109,7 +109,8 @@ public class Client
                     _logger?.LogError($"{(int)response.StatusCode} HTTP status code is received. Retrying the {operationName} request. Retry count: {i}. Waiting for {wait} ms...");
                     Thread.Sleep(TimeSpan.FromMilliseconds((int)wait));
                     response = client.PostAsync(Helpers.Url(), content).Result;
-                    responseObject.ErrorResponse =  JsonSerializer.Deserialize<ErrorResponse>(responseObject.Body());
+                    responseObject = ResponseFactory.create(response);
+                    responseObject.ErrorResponse =  JsonSerializer.Deserialize<ErrorResponse>(responseObject.Body);
                 }
                 else
                 {
@@ -120,16 +121,14 @@ public class Client
         }
 
         stopwatch.Stop();
-
-        responseObject.ResponseObject = response;
         responseObject.RetryCount = httpRetryCount;
         responseObject.TimeSpentInMs = stopwatch.ElapsedMilliseconds;
         responseObject.RateLimiter = new RateLimiter(responseObject);
         
-        _logger?.LogInformation($"Executing {operationName} query is finished with {responseObject.Status()} status code. It took {stopwatch.ElapsedMilliseconds} ms and retried {httpRetryCount} times.");
+        _logger?.LogInformation($"Executing {operationName} query is finished with {responseObject.Status} status code. It took {stopwatch.ElapsedMilliseconds} ms and retried {httpRetryCount} times.");
         if (!response.IsSuccessStatusCode)
         {
-            _logger?.LogError($"Executing {operationName} query is failed. Received status code is {responseObject.Status()}");
+            _logger?.LogError($"Executing {operationName} query is failed. Received status code is {responseObject.Status}");
             ManageErrorState(responseObject);
         }
         
@@ -138,7 +137,7 @@ public class Client
 
     private static void ManageErrorState(Response response)
     {
-        switch (response.ResponseObject.StatusCode)
+        switch (response.StatusCode)
         {
             case HttpStatusCode.BadRequest:
                 if (response.ErrorResponse.IsInvalidToken())
@@ -189,11 +188,11 @@ public class Client
             case HttpStatusCode.GatewayTimeout:
                 throw new GatewayTimeoutException(response);
             default:
-                if (response.Status() >= 400 && response.Status() < 500)
+                if (response.Status >= 400 && response.Status < 500)
                 {
                     throw new ClientErrorException(response);
                 }
-                else if (response.Status() >= 500 && response.Status() < 600)
+                else if (response.Status >= 500 && response.Status < 600)
                 {
                     throw new ServerErrorException(response);
                 }

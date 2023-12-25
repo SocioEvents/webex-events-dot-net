@@ -3,7 +3,7 @@ namespace WebexEvents.Exceptions;
 public class SecondBasedQuotaIsReachedException : BaseNetworkException
 {
     public SecondBasedQuotaIsReachedException(Response response)
-        :base(response.Body())
+        :base(response.Body)
     {
         Response = response;
     }

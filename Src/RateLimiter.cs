@@ -9,7 +9,7 @@ public class RateLimiter
     private const string DailyRetryAfter = "x-daily-retry-after";
     private const string SecondlyRetryAfter = "x-secondly-retry-after";
     
-    private readonly HttpHeaders _headers;
+    private readonly Dictionary<string, string> _headers;
 
     private readonly int _usedSecondBasedCost;
     private readonly int _secondBasedCostThreshold;
@@ -20,7 +20,7 @@ public class RateLimiter
 
     public RateLimiter(Response response)
     {
-        _headers = response.Headers();
+        _headers = response.ResponseHeaders;
 
         var dailyCallLimit = GetHeaderValue(DailyCallLimit);
         if (dailyCallLimit.Length > 0)
@@ -53,8 +53,14 @@ public class RateLimiter
 
     private string GetHeaderValue(string header)
     {
-        _headers.TryGetValues(header, out var values);
-        return values?.FirstOrDefault() ?? "";
+        if (_headers.ContainsKey(header))
+        {
+            return _headers[header];
+        }
+        else
+        {
+            return "";
+        }
     }
     
     public int UsedSecondBasedCost()

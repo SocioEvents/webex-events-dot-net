@@ -3,7 +3,7 @@ namespace WebexEvents.Exceptions;
 public class DailyQuotaIsReachedException : BaseNetworkException
 {
     public DailyQuotaIsReachedException(Response response)
-        :base(response.Body())
+        :base(response.Body)
     {
         Response = response;
     }

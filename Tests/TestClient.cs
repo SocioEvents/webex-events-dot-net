@@ -48,8 +48,8 @@ public class TestClient
     {
         Mock(HttpStatusCode.OK, "{}");
         var response = Query();
-        Assert.That(200, Is.EqualTo(response.Status()));
-        Assert.That("{}", Is.EqualTo(response.Body()));
+        Assert.That(200, Is.EqualTo(response.Status));
+        Assert.That("{}", Is.EqualTo(response.Body));
         Assert.That(0, Is.EqualTo(response.RetryCount));
     }
 
@@ -62,13 +62,11 @@ public class TestClient
             IdempotencyKey = "idempotency key"
         };
         var response = Client.Query("", "", new Dictionary<string, object>(), options);
-        Assert.That(200, Is.EqualTo(response.Status()));
-        Assert.That("{}", Is.EqualTo(response.Body()));
+        Assert.That(200, Is.EqualTo(response.Status));
+        Assert.That("{}", Is.EqualTo(response.Body));
         
-        var responseHeaders = response.RequestHeaders();
-        responseHeaders.TryGetValues("Idempotency-Key", out var values);
-        var header = values?.FirstOrDefault() ?? "";
-        Assert.That("idempotency key", Is.EqualTo(header));
+        var responseHeaders = response.RequestHeaders;
+        Assert.That("idempotency key", Is.EqualTo(responseHeaders["idempotency-key"]));
     }
     
     [Test]
@@ -86,7 +84,7 @@ public class TestClient
         var exception = Assert.Throws<InvalidAccessTokenException>(() => Query());
         Assert.That(true, Is.EqualTo(exception.Response.ErrorResponse.IsInvalidToken()));
         Assert.That(0, Is.EqualTo(exception.Response.RetryCount));
-        Assert.That(400, Is.EqualTo(exception.Response.Status()));
+        Assert.That(400, Is.EqualTo(exception.Response.Status));
     }
     
     
@@ -105,7 +103,7 @@ public class TestClient
         var exception = Assert.Throws<AccessTokenIsExpiredException>(() => Query());
         Assert.That(true, Is.EqualTo(exception.Response.ErrorResponse.IsTokenExpired()));
         Assert.That(0, Is.EqualTo(exception.Response.RetryCount));
-        Assert.That(400, Is.EqualTo(exception.Response.Status()));
+        Assert.That(400, Is.EqualTo(exception.Response.Status));
     }
     
     [Test]
@@ -114,7 +112,7 @@ public class TestClient
         Mock(HttpStatusCode.Unauthorized, "{}");
         var exception = Assert.Throws<UnauthorizedException>(() => Query());
         Assert.That(0, Is.EqualTo(exception.Response.RetryCount));
-        Assert.That(401, Is.EqualTo(exception.Response.Status()));
+        Assert.That(401, Is.EqualTo(exception.Response.Status));
     }
     
     [Test]
@@ -123,7 +121,7 @@ public class TestClient
         Mock(HttpStatusCode.Forbidden, "{}");
         var exception = Assert.Throws<ForbiddenException>(() => Query());
         Assert.That(0, Is.EqualTo(exception.Response.RetryCount));
-        Assert.That(403, Is.EqualTo(exception.Response.Status()));
+        Assert.That(403, Is.EqualTo(exception.Response.Status));
     }
     
     [Test]
@@ -132,7 +130,7 @@ public class TestClient
         Mock(HttpStatusCode.RequestTimeout, "{}");
         var exception = Assert.Throws<RequestTimeoutException>(() => Query());
         Assert.That(1, Is.EqualTo(exception.Response.RetryCount));
-        Assert.That(408, Is.EqualTo(exception.Response.Status()));
+        Assert.That(408, Is.EqualTo(exception.Response.Status));
     }
     
     
@@ -142,7 +140,7 @@ public class TestClient
         Mock(HttpStatusCode.Conflict, "{}");
         var exception = Assert.Throws<ConflictException>(() => Query());
         Assert.That(1, Is.EqualTo(exception.Response.RetryCount));
-        Assert.That(409, Is.EqualTo(exception.Response.Status()));
+        Assert.That(409, Is.EqualTo(exception.Response.Status));
     }
     
     [Test]
@@ -151,7 +149,7 @@ public class TestClient
         Mock(HttpStatusCode.RequestEntityTooLarge, "{}");
         var exception = Assert.Throws<RequestEntityTooLargeException>(() => Query());
         Assert.That(0, Is.EqualTo(exception.Response.RetryCount));
-        Assert.That(413, Is.EqualTo(exception.Response.Status()));
+        Assert.That(413, Is.EqualTo(exception.Response.Status));
     }
     
     [Test]
@@ -160,7 +158,7 @@ public class TestClient
         Mock(HttpStatusCode.UnprocessableEntity, "{}");
         var exception = Assert.Throws<UnprocessableEntityException>(() => Query());
         Assert.That(0, Is.EqualTo(exception.Response.RetryCount));
-        Assert.That(422, Is.EqualTo(exception.Response.Status()));
+        Assert.That(422, Is.EqualTo(exception.Response.Status));
     }
 
     [Test]
@@ -180,7 +178,7 @@ public class TestClient
         Mock(HttpStatusCode.TooManyRequests, json);
         var exception = Assert.Throws<DailyQuotaIsReachedException>(() => Query());
         Assert.That(0, Is.EqualTo(exception.Response.RetryCount));
-        Assert.That(429, Is.EqualTo(exception.Response.Status()));
+        Assert.That(429, Is.EqualTo(exception.Response.Status));
     }
     
     [Test]
@@ -200,7 +198,7 @@ public class TestClient
         Mock(HttpStatusCode.TooManyRequests, json);
         var exception = Assert.Throws<SecondBasedQuotaIsReachedException>(() => Query());
         Assert.That(1, Is.EqualTo(exception.Response.RetryCount));
-        Assert.That(429, Is.EqualTo(exception.Response.Status()));
+        Assert.That(429, Is.EqualTo(exception.Response.Status));
     }
     
     [Test]
@@ -210,7 +208,7 @@ public class TestClient
         Mock(HttpStatusCode.TooManyRequests, json);
         var exception = Assert.Throws<TooManyRequestException>(() => Query());
         Assert.That(1, Is.EqualTo(exception.Response.RetryCount));
-        Assert.That(429, Is.EqualTo(exception.Response.Status()));
+        Assert.That(429, Is.EqualTo(exception.Response.Status));
     }
     
     [Test]
@@ -219,7 +217,7 @@ public class TestClient
         Mock(HttpStatusCode.InternalServerError, "{}");
         var exception = Assert.Throws<ServerErrorException>(() => Query());
         Assert.That(0, Is.EqualTo(exception.Response.RetryCount));
-        Assert.That(500, Is.EqualTo(exception.Response.Status()));
+        Assert.That(500, Is.EqualTo(exception.Response.Status));
     }
     
     [Test]
@@ -228,7 +226,7 @@ public class TestClient
         Mock(HttpStatusCode.BadGateway, "{}");
         var exception = Assert.Throws<BadGatewayException>(() => Query());
         Assert.That(1, Is.EqualTo(exception.Response.RetryCount));
-        Assert.That(502, Is.EqualTo(exception.Response.Status()));
+        Assert.That(502, Is.EqualTo(exception.Response.Status));
     }
     
     [Test]
@@ -237,7 +235,7 @@ public class TestClient
         Mock(HttpStatusCode.ServiceUnavailable, "{}");
         var exception = Assert.Throws<ServiceUnavailableException>(() => Query());
         Assert.That(1, Is.EqualTo(exception.Response.RetryCount));
-        Assert.That(503, Is.EqualTo(exception.Response.Status()));
+        Assert.That(503, Is.EqualTo(exception.Response.Status));
     }
     
     [Test]
@@ -246,7 +244,7 @@ public class TestClient
         Mock(HttpStatusCode.GatewayTimeout, "{}");
         var exception = Assert.Throws<GatewayTimeoutException>(() => Query());
         Assert.That(1, Is.EqualTo(exception.Response.RetryCount));
-        Assert.That(504, Is.EqualTo(exception.Response.Status()));
+        Assert.That(504, Is.EqualTo(exception.Response.Status));
     }
     
     [Test]
@@ -255,7 +253,7 @@ public class TestClient
         Mock(HttpStatusCode.UpgradeRequired, "{}");
         var exception = Assert.Throws<ClientErrorException>(() => Query());
         Assert.That(0, Is.EqualTo(exception.Response.RetryCount));
-        Assert.That(426, Is.EqualTo(exception.Response.Status()));
+        Assert.That(426, Is.EqualTo(exception.Response.Status));
     }
     
     [Test]
@@ -264,6 +262,6 @@ public class TestClient
         Mock(HttpStatusCode.NotExtended, "{}");
         var exception = Assert.Throws<ServerErrorException>(() => Query());
         Assert.That(0, Is.EqualTo(exception.Response.RetryCount));
-        Assert.That(510, Is.EqualTo(exception.Response.Status()));
+        Assert.That(510, Is.EqualTo(exception.Response.Status));
     }
 }
