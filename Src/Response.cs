@@ -25,8 +25,17 @@ public class Response
         set;
     }
 
-    public Dictionary<string, string> ResponseHeaders;
-    public Dictionary<string, string> RequestHeaders;
+    public Dictionary<string, string> ResponseHeaders
+    {
+        get;
+        set;
+    }
+
+    public Dictionary<string, string> RequestHeaders
+    {
+        get;
+        set;
+    }
 
     public string Body { get; set; }
 }
